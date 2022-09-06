@@ -11,7 +11,13 @@
 	let columns = ['Name', 'value', 'on/off','reset', 'read dac', 'read i2c v,i', 'response']
     let lph_columns = ['Name', 'value'];
     let lph_values;
-    const server = 'http://132.163.53.82:3200'
+    let server;
+    if (true) {
+        server = 'http://127.0.0.1:3200';
+    } else {
+        server = 'http://132.163.53.82:3200'
+    }
+
     const unsubscribe = dacs.subscribe(value => {
 	    dac_values = value;
 	    console.log('subscribed')
@@ -42,6 +48,16 @@
             console.log(i, res);
             if (typeof(res)=='number') {
 				lph.update(values => {values[i][1]=res; return values;})
+            }
+        }
+        // read enabled setting from microcontroller
+        for (let i=0; i<4; i++) {
+            console.log('fetch', i);
+            let res = await fetch(`${server}/hph/${i}/get/enabled`);
+            res = await res.json();
+            console.log(i, res);
+            if (typeof(res)=='number') {
+				dacs.update(values => {values[i][2]=res; return values;})
             }
         }
         console.log('done reading heater values from the microcontroller');
@@ -101,6 +117,15 @@
         let index = e.srcElement.attributes['index'].value;
         console.log('enable button');
         console.log(index, e.srcElement.checked);
+        let value = 0
+        if (e.srcElement.checked) {
+            value = 1
+        }
+        let command = `${server}/hph/${index}/set/enabled?value=${value}`
+        console.log('command', command);
+        let response = await fetch(command);
+        response = await response.json()
+        readings[index] = response;
     }
 $: {
         dac_values;
