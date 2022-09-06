@@ -8,20 +8,20 @@
 		console.log('has serial');
 	}
 	let dac_values;
-	let columns = ['Name', 'value', 'on/off','read i,v', 'reading']
+	let columns = ['Name', 'value', 'on/off','reset', 'read dac', 'read i2c v,i', 'response']
     let lph_columns = ['Name', 'value'];
     let lph_values;
-    const server = 'http://127.0.0.1:3200'
-	const unsubscribe = dacs.subscribe(value => {
-		dac_values = value;
-		console.log('subscribed')
-	});
-	onDestroy(unsubscribe);
-	const unsubscribe2 = lph.subscribe(value => {
-		lph_values = value;
-		console.log('subscribed')
-	});
-	onDestroy(unsubscribe2);
+    const server = 'http://132.163.53.82:3200'
+    const unsubscribe = dacs.subscribe(value => {
+	    dac_values = value;
+	    console.log('subscribed')
+    });
+    onDestroy(unsubscribe);
+    const unsubscribe2 = lph.subscribe(value => {
+	    lph_values = value;
+	    console.log('subscribed')
+    });
+    onDestroy(unsubscribe2);
     onMount(async () => {
         console.log('onMount');
         // read high power heataer setting from microcontroller
@@ -77,8 +77,22 @@
         let index = e.srcElement.attributes['index'].value;
         let command = `${server}/hph/${index}/get/monitor`;
         console.log('onClick command: ', command)
-        // let response = await fetch('http://127.0.0.1:3000/hph/0/set/current?i=0');
-        // console.log('response', await response.json());
+        let response = await fetch(command);
+        response = await response.json()
+        readings[index] = response;
+    }
+    async function onReset(e) {
+        let index = e.srcElement.attributes['index'].value;
+        let command = `${server}/hph/${index}/reset`;
+        console.log('onReset command: ', command)
+        let response = await fetch(command);
+        response = await response.json()
+        readings[index] = response;
+    }
+    async function onReadDac(e) {
+        let index = e.srcElement.attributes['index'].value;
+        let command = `${server}/hph/${index}/get/current`;
+        console.log('onReadDac command: ', command)
         let response = await fetch(command);
         response = await response.json()
         readings[index] = response;
@@ -114,8 +128,10 @@ $: {
 		<td><input bind:value={row[0]} style="width: 5em;" /></td>
 		<td><In index={index} store={dacs} step=1 extras={{min:0, max:31, style:"width: 7em;"}} value={row[1]}  on:change={onChange} /></td>
 		<td><input index={index} type=checkbox bind:checked={row[2]} on:click={enable}/></td>
-        <td><button index={index} on:click={onClick}>read</button></td>
-        <td>results {readings[index]}</td>
+        <td><button index={index} on:click={onReset}>reset</button></td>
+        <td><button index={index} on:click={onReadDac}>read dac</button></td>
+        <td><button index={index} on:click={onClick}>read i2c</button></td>
+        <td>{readings[index]}</td>
 	</tr>
 	{/each}
 </table>
