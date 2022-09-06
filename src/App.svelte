@@ -104,6 +104,11 @@
         let response = await fetch(command);
         response = await response.json()
         readings[index] = response;
+        console.log(dac_values[index]);
+        command = `${server}/hph/${index}/set/current?i=${dac_values[index][1]}`;
+        response = await fetch(command);
+        response = await response.json()
+        readings[index] = response;
     }
     async function onReadDac(e) {
         let index = e.srcElement.attributes['index'].value;
