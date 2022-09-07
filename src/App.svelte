@@ -11,6 +11,7 @@
 	let columns = ['Name', 'value', 'on/off','reset', 'read dac', 'read i2c v,i', 'response']
     let lph_columns = ['Name', 'value'];
     let lph_values;
+    let disabled = false;
     let server;
     if (true) {
         server = 'http://127.0.0.1:3200';
@@ -62,6 +63,12 @@
         }
         console.log('done reading heater values from the microcontroller');
     });
+    function lock() {
+        disabled = true;
+    }
+    function unlock() {
+        disabled = false;
+    }
     async function click() {
         console.log('click');
         let response = await fetch('${server}/hph/0/set/current?i=0');
@@ -74,33 +81,40 @@
         console.log(e.detail.value);
         let command = `${server}/hph/${index}/set/current?i=${e.detail.value}`
         console.log('onChange command: ', command);
+        lock();
         let response = await fetch(command)
         response = await response.json()
         console.log('onChange: response', response);
+        unlock();
     }
     async function onChangeLPH(e) {
         let index = Number(e.detail.attributes['index'].value);
         console.log('dac changed, index:', index);
         console.log(e.detail);
         console.log(e.detail.value);
+        lock();
         let command = `${server}/lph/${index+1}/set/current?i=${e.detail.value}`
         console.log('onChangeLPH command: ', command);
         let response = await fetch(command)
         response = await response.json()
         console.log('onChangeLPH: response', response);
+        unlock();
     }
     async function onClick(e) {
         let index = e.srcElement.attributes['index'].value;
         let command = `${server}/hph/${index}/get/monitor`;
         console.log('onClick command: ', command)
+        lock();
         let response = await fetch(command);
         response = await response.json()
         readings[index] = response;
+        unlock();
     }
     async function onReset(e) {
         let index = e.srcElement.attributes['index'].value;
         let command = `${server}/hph/${index}/reset`;
         console.log('onReset command: ', command)
+        lock();
         let response = await fetch(command);
         response = await response.json()
         readings[index] = response;
@@ -109,14 +123,17 @@
         response = await fetch(command);
         response = await response.json()
         readings[index] = response;
+        unlock();
     }
     async function onReadDac(e) {
         let index = e.srcElement.attributes['index'].value;
         let command = `${server}/hph/${index}/get/current`;
         console.log('onReadDac command: ', command)
+        lock();
         let response = await fetch(command);
         response = await response.json()
         readings[index] = response;
+        unlock();
     }
     async function enable(e) {
         let index = e.srcElement.attributes['index'].value;
@@ -156,11 +173,11 @@ $: {
 	{#each dac_values as row, index}
 	<tr>
 		<td><input bind:value={row[0]} style="width: 5em;" /></td>
-		<td><In index={index} store={dacs} step=1 extras={{min:0, max:31, style:"width: 7em;"}} value={row[1]}  on:change={onChange} /></td>
-		<td><input index={index} type=checkbox bind:checked={row[2]} on:click={enable}/></td>
-        <td><button index={index} on:click={onReset}>reset</button></td>
-        <td><button index={index} on:click={onReadDac}>read dac</button></td>
-        <td><button index={index} on:click={onClick}>read i2c</button></td>
+		<td><In index={index} disabled={disabled} store={dacs} step=1 extras={{min:0, max:31, style:"width: 7em;"}} value={row[1]}  on:change={onChange} /></td>
+		<td><input index={index} disabled={disabled} type=checkbox bind:checked={row[2]} on:click={enable}/></td>
+        <td><button index={index} disabled={disabled} on:click={onReset}>reset</button></td>
+        <td><button index={index} disabled={disabled} on:click={onReadDac}>read dac</button></td>
+        <td><button index={index} disabled={disabled} on:click={onClick}>read i2c</button></td>
         <td>{readings[index]}</td>
 	</tr>
 	{/each}

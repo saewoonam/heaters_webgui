@@ -45,9 +45,10 @@
 	export let placeholder = '';
 	export let inputClasses = '';
 	export let extras={};
-  export let id=''
+    export let id=''
 	export let index=-1;
 	export let store={};
+    export let disabled=false;
 	let inputEl;
 
   //$: console.log('In $', value);
@@ -55,6 +56,7 @@
 </script>
 <input 
 			 type="number" 
+             disabled={disabled}
 			 id={id}
 			 {value}
 			 step={step}
