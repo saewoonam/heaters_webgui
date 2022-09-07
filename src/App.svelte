@@ -21,12 +21,12 @@
 
     const unsubscribe = dacs.subscribe(value => {
 	    dac_values = value;
-	    console.log('subscribed')
+	    console.log('subscribed dacs')
     });
     onDestroy(unsubscribe);
     const unsubscribe2 = lph.subscribe(value => {
 	    lph_values = value;
-	    console.log('subscribed')
+	    console.log('subscribed lph')
     });
     onDestroy(unsubscribe2);
     onMount(async () => {
@@ -89,7 +89,7 @@
     }
     async function onChangeLPH(e) {
         let index = Number(e.detail.attributes['index'].value);
-        console.log('dac changed, index:', index);
+        console.log('lph changed, index:', index);
         console.log(e.detail);
         console.log(e.detail.value);
         lock();
@@ -192,7 +192,7 @@ $: {
 	{#each lph_values as row, index}
 	<tr>
 		<td><input bind:value={row[0]} style="width: 5em;" /></td>
-		<td><In index={index} store={dacs} step=1 extras={{min:0, max:255, style:"width: 7em;"}} value={row[1]}  on:change={onChangeLPH} /></td>
+		<td><In index={index} store={lph} step=1 extras={{min:0, max:255, style:"width: 7em;"}} value={row[1]}  on:change={onChangeLPH} /></td>
 	</tr>
 	{/each}
 </table>
