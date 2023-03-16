@@ -4,13 +4,11 @@
 	// change code to get store as a parameter
 	// import { dacs } from './dac_stores.js';
 	const dispatch = createEventDispatcher();
-	function onChange(e) {
-
-	}
 	function onBlur(e) {
 		console.log('onBlur', value, e.target.value);
 		if (value != e.target.value) {
-			value = Number(e.target.value);
+			//comp_value = Number(e.target.value)
+			value = Number(e.target.value); //Value in which what gui shows
 			//console.log('change', e.target)
 			dispatch('change', e.target)
 			if (index>-1) {
@@ -55,18 +53,18 @@
 
 </script>
 <input 
-			 type="number" 
-             disabled={disabled}
-			 id={id}
-			 {value}
-			 step={step}
-			 class={inputClasses}
-			 bind:this={inputEl}
-			 {placeholder}
-			 {...extras}
-			 on:blur={onBlur}
-			 on:focus={onFocus} 
-			 on:keyup|stopPropagation={onKeyup} on:mousewheel={()=>{;}}
-			 index={index}
-			 store={store}
-			 />
+    type="number"
+    disabled={disabled}
+    id={id}
+    {value}
+    step={step}
+    class={inputClasses}
+    bind:this={inputEl}
+    {placeholder}
+    {...extras}
+    on:blur={onBlur}
+    on:focus={onFocus} 
+    on:keyup|stopPropagation={onKeyup} on:mousewheel={()=>{;}}
+    index={index}
+    store={store}
+/>
