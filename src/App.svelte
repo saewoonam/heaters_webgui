@@ -52,7 +52,7 @@
 
         }
         // read low power heataer setting from microcontroller
-        for (let i=0; i<4; i++) {
+        for (let i=0; i<5; i++) {
             console.log('fetch', i);
             /*
             let res = await fetch(`${server}/lph/${i+1}/get/current`);

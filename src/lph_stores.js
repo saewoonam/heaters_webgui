@@ -5,4 +5,5 @@ export const lph = writable([
 	['lph1',0],
 	['lph2',0],
 	['lph3',0],
+	['lph4',0],
 ]);
